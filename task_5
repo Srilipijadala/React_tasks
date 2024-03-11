@@ -1,90 +1,72 @@
 import React, { useState } from 'react';
 
-function BMI1() {
-  const [name, setName] = useState('');
-  const [height, setHeight] = useState(null);
-  const [weight, setWeight] = useState(null);
-  const [bmi, setBMI] = useState(null);
-  const [result, setResult] = useState('');
-  const [errorMsg1,setErrorMsg1]=useState('')
-  const [errorMsg2,setErrorMsg2]=useState('')
-  const [errorMsg3,setErrorMsg3]=useState('')
+function Todos() {
+  const [todos, setTodos] = useState([]);
+  //creating a empty list of todos
+  const [newTodo, setNewTodo] = useState('');
+  const [errorMsg,setErrorMsg]=useState('');
 
- 
-  const calculateBMI=()=>{
-    const heightM = (height) / 100; //converting into meters
-    const bmiCal = ((weight) / (heightM * heightM)).toFixed(3);
-    setBMI(bmiCal);
-    if (bmiCal < 18.5) {
-      setResult('Underweight');
-    } else if (bmiCal >= 18.5 && bmiCal < 25) {
-      setResult('Normal weight');
-    } else {
-      setResult('Overweight');
+  
+
+  const handleAddTodo = () => {
+    if (newTodo.trim() !== '') {
+    //empty todo string is avoided using the trim()
+            
+          setTodos([newTodo,...todos]);
+          console.log(newTodo)
+    //each new todo is appended to the beginning of the list
+      setNewTodo('');
+      setErrorMsg("")
     }
-
+    else{
+      setErrorMsg("Please enter a valid name") 
+    }
   };
-    
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      if (!/^[a-zA-Z\s]+$/.test(name) || name.trim()==='')
-      {
-        setErrorMsg1('Please enter valid name!');        
-        return;
-      }
-      else{
-        setErrorMsg1('');        
-      }
-      if (!/^\d+(\.\d+)?$/.test(height) || parseFloat(height) <= 0) 
-      {
-        setErrorMsg2('Please enter a valid height!');
-        return;
-      }
-      else{
-        setErrorMsg2('');        
-      }
-      if (!/^\d+(\.\d+)?$/.test(weight) || parseFloat(weight) <= 0) {
-        setErrorMsg3('Please enter a valid weight!');
-        return;
-      }
-      else{
-        setErrorMsg3('');        
 
-      }
-      calculateBMI()
-    };
+  const handleDeleteTodo=(index)=>{
+    const Deltodo=[...todos]
+    Deltodo.splice(index,1)
+    setTodos(Deltodo)
+  };
+  const handleDeleteAll=()=>{
+    const Delalltodo=[...todos]
+    Delalltodo.splice(0,todos.length)
+    setTodos(Delalltodo)
+  };
+
+  const handleEditTodo = (index, editedtodo) => {
+    const editedtodos = [...todos];
+    editedtodos[index] = editedtodo;
+    setTodos(editedtodos);   
+    console.log(editedtodo)
+  };
 
   return (
     <div className="App">
-      <h2>BMI Calculator</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" value={name} onChange={(e)=>setName(e.target.value)}/>
-          {errorMsg1 && <div className="error" style={{color: "red"}}> {errorMsg1} </div>}
+      <h1>To-do Application</h1>
+      <div >
+        <input
+          type="text"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          placeholder="Enter a new todo"
+        />
+        <button onClick={handleAddTodo}>Add Todo</button>
+        <button onClick={handleDeleteAll}>Delete All</button><br/>
+        {errorMsg && <div className="error"> {errorMsg} </div>}
         </div>
-        <div>
-          <label>Height (in cm):</label>
-          <input type="number" value={height} onChange={(e)=>setHeight(e.target.value)}/>
-          {errorMsg2 && <div className="error" style={{color: "red"}}> {errorMsg2} </div>}
+        <ul>
+          {todos.map((todo,index) => (
 
-        </div>
-        <div>
-          <label>Weight (in kgs):</label>
-          <input type="number" value={weight} onChange={(e)=>setWeight(e.target.value)}/>
-          {errorMsg3 && <div className="error" style={{color: "red"}}> {errorMsg3} </div>}
-
-        </div>
-        <button type="submit">Calculate the BMI</button>
-      </form>
-      {bmi && (
-        <div>
-          <h3>{name}, your BMI is {bmi}</h3>
-          <p>Result: {result}</p>
-        </div>
-      )}
+            <li key={index}>
+            <input type="text" value={todos[index]} onChange={(e)=>handleEditTodo(index,e.target.value)} />
+            <button onClick={() => handleDeleteTodo(index)}>Delete</button><br/>
+            </li>
+          ))}
+        </ul>
+      
     </div>
   );
-};
+}
 
-export default BMI1;
+export default Todos;
